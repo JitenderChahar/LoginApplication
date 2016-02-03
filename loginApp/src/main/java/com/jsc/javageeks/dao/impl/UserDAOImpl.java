@@ -8,8 +8,10 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.jsc.javageeks.application.Constant;
 import com.jsc.javageeks.dao.UserDAO;
 import com.jsc.javageeks.domain.User;
+import com.jsc.javageeks.exception.GenericException;
 import com.jsc.javageeks.utils.DatabaseUtils;
 import com.jsc.javageeks.utils.Utils;
 
@@ -18,7 +20,7 @@ public class UserDAOImpl implements UserDAO {
 	DatabaseUtils databaseUtils = new DatabaseUtils();
 	private static Logger logger = Logger.getLogger(UserDAOImpl.class);
 
-	public int saveUser(User user) {
+	public int saveUser(User user) throws GenericException {
 		logger.info("Inside saveUser method of UserDAOImpl class");
 		Connection con = DatabaseUtils.createConnection();
 		String query = "INSERT INTO users VALUES (" + user.getId() + ",'" + user.getEmail() + "','" + user.getPassword()
@@ -28,13 +30,14 @@ public class UserDAOImpl implements UserDAO {
 			rowInserted = DatabaseUtils.runQuery(con, query);
 		} catch (SQLException exception) {
 			logger.error(exception.getMessage());
+			throw new GenericException(Constant.GENERIC_ERROR_MSG);
 		} finally {
 			DatabaseUtils.closeConnection(con);
 		}
 		return rowInserted;
 	}
 
-	public User getUserById(int userId) {
+	public User getUserById(int userId) throws GenericException {
 		logger.info("Inside getUserById method of UserDAOImpl class");
 		Connection con = DatabaseUtils.createConnection();
 		String query = "SELECT * FROM users where id=" + userId + ";";
@@ -46,13 +49,14 @@ public class UserDAOImpl implements UserDAO {
 			}
 		} catch (SQLException exception) {
 			logger.error(exception.getMessage());
+			throw new GenericException(Constant.GENERIC_ERROR_MSG);
 		} finally {
 			DatabaseUtils.closeConnection(con);
 		}
 		return user;
 	}
 
-	public User getUserByEmail(String email) {
+	public User getUserByEmail(String email) throws GenericException {
 		logger.info("Inside getUserByEmail method of UserDAOImpl class");
 		Connection con = DatabaseUtils.createConnection();
 		String query = "SELECT * FROM users where email='" + email + "';";
@@ -64,13 +68,14 @@ public class UserDAOImpl implements UserDAO {
 			}
 		} catch (SQLException exception) {
 			logger.error(exception.getMessage());
+			throw new GenericException(Constant.GENERIC_ERROR_MSG);
 		} finally {
 			DatabaseUtils.closeConnection(con);
 		}
 		return user;
 	}
 
-	public List<User> getAllUsers() {
+	public List<User> getAllUsers() throws GenericException {
 		logger.info("Inside getAllUsers method of UserDAOImpl class");
 		Connection con = DatabaseUtils.createConnection();
 		String query = "SELECT * FROM users";
@@ -85,6 +90,7 @@ public class UserDAOImpl implements UserDAO {
 			}
 		} catch (SQLException exception) {
 			logger.error(exception.getMessage());
+			throw new GenericException(Constant.GENERIC_ERROR_MSG);
 		} finally {
 			DatabaseUtils.closeConnection(con);
 		}

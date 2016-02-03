@@ -15,7 +15,9 @@ import javax.ws.rs.core.Response.Status;
 
 import com.jsc.javageeks.application.Constant;
 import com.jsc.javageeks.application.StatusCode;
+import com.jsc.javageeks.domain.StatusUserCombined;
 import com.jsc.javageeks.domain.User;
+import com.jsc.javageeks.exception.GenericException;
 import com.jsc.javageeks.service.DatabaseService;
 import com.jsc.javageeks.service.impl.DatabaseServiceImpl;
 
@@ -36,12 +38,10 @@ public class UserResources {
 	@Path("authenticate")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response authenticateUser(User user) {
-		User userInDB =  databaseService.authenticateUser(user);
-		if(userInDB == null){
-			com.jsc.javageeks.domain.Status status = new com.jsc.javageeks.domain.Status(Constant.NO_RECORD_FOUND_MSG,
-					StatusCode.NO_RECORD_FOUND);
-			return Response.status(Status.OK).entity(status).build();
+	public Response authenticateUser(User user) throws GenericException {
+		StatusUserCombined statusUserCombined = databaseService.authenticateUser(user);
+		if (statusUserCombined.getUser() == null) {
+			return Response.status(Status.OK).entity(statusUserCombined.getStatus()).build();
 		}
 		return Response.status(Status.OK).entity(user).build();
 	}
@@ -50,7 +50,7 @@ public class UserResources {
 	@Path("addUser")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addUser(User user) {
+	public Response addUser(User user) throws GenericException {
 		com.jsc.javageeks.domain.Status status = databaseService.addUser(user);
 		return Response.status(Status.CREATED).entity(status).build();
 	}
@@ -58,7 +58,7 @@ public class UserResources {
 	@GET
 	@Path("users")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAllUsers() {
+	public Response getAllUsers() throws GenericException {
 		List<User> users = databaseService.getAllUsers();
 		if (users.size() == 0) {
 			com.jsc.javageeks.domain.Status status = new com.jsc.javageeks.domain.Status(Constant.NO_RECORD_FOUND_MSG,
@@ -73,7 +73,7 @@ public class UserResources {
 	@GET
 	@Path("users/{userId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getUser(@PathParam("userId") int userId) {
+	public Response getUser(@PathParam("userId") int userId) throws GenericException {
 		User user = databaseService.getUser(userId);
 		if (user == null) {
 			String message = Constant.NO_RECORD_FOUND_FOR_ID_MSG + " " + userId;

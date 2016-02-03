@@ -67,13 +67,18 @@ var Login = {
 				var loginTmpl = _.template("<h1>Successfully logged in.</h1>");
 				$("#appContainer").html(loginTmpl);
 			} else {
-				Login.showLoginError('Incorrect Username or Password');
+				Login.showLoginError(data.message);
 				$('#statusMessage').addClass("error");
 			}
 		}
 
 		function failureHandler(data) {
-			Login.showLoginError("Can't connect to server");
+			if (data.responseJSON.message) {
+				Login.showLoginError(data.responseJSON.message);
+			} else {
+				Login.showLoginError("Cannot connect to server");
+			}
+
 			$('#statusMessage').addClass("error");
 		}
 
